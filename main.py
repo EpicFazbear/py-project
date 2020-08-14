@@ -10,16 +10,16 @@ class MusicPlayer:
         # Initialize Variables + Functions
         self.root = root
         self.root.title("Totally not a WINAMP clone")
-        self.root.geometry("500x410+200+200")
+        self.root.geometry("500x420+200+200")
         self.track = StringVar()
         self.status = StringVar()
+        self.timestamp = StringVar()
         self.last_pos = DoubleVar()
         pygame.init()
         pygame.mixer.init()
 
         # GUI stuff
         # Track Frames
-        # Todo: Add time stamps
 
         track_frame = LabelFrame(
             self.root,
@@ -35,7 +35,7 @@ class MusicPlayer:
             x=0,
             y=0,
             width=500,
-            height=110
+            height=120
         )
 
         track_name = Label(
@@ -53,8 +53,17 @@ class MusicPlayer:
             font=("comic sans ms", 15, "bold"),
             bg="light grey",
             fg="navy blue",
-            width=30
+            width=15
         ).grid(row=1, column=0, padx=10, pady=5)
+
+        track_pos = Label(
+            track_frame,
+            textvariable=self.timestamp,
+            font=("comic sans ms", 15, "bold"),
+            bg="light grey",
+            fg="navy blue",
+            width=5
+        ).grid(row=1, column=1, padx=10, pady=5)
 
         # Playlist Frame
 
@@ -72,7 +81,7 @@ class MusicPlayer:
 
         songs_frame.place(
             x=0,
-            y=110,
+            y=120,
             width=500,
             height=200
         )
@@ -108,7 +117,7 @@ class MusicPlayer:
 
         button_frame.place(
             x=0,
-            y=310,
+            y=320,
             width=500,
             height=100
         )
@@ -181,10 +190,12 @@ class MusicPlayer:
         self.status.set("Playing")
         Player.load(self.playlist.get(ACTIVE))
         Player.play()
+        self.timestamp.set(Player.get_pos())
 
     def pause(self):
         self.status.set("Paused")
         self.last_pos = Player.get_pos()
+        self.timestamp.set(self.last_pos)
         Player.stop()
 
     def resume(self):
@@ -193,13 +204,14 @@ class MusicPlayer:
 
     def stop(self):
         self.status.set("Stopped")
+        self.timestamp = StringVar()
         self.last_pos = DoubleVar()
         Player.pause()
 
     def rewind(self):
-        self.status.set("Rewinding")
-        Player.rewind()
         self.status.set("Playing")
+        Player.rewind()
+        self.timestamp.set(Player.get_pos())
 
 
 # Start TK and run the application
